@@ -6,10 +6,21 @@ The current page displays only `Hello`. Currency conversion remains planned.
 ## Requirements
 
 - Node.js 24 (`>=24 <25`).
+- A [CurrencyBeacon API key](https://currencybeacon.com/api-documentation), set as `VITE_CURRENCYBEACON_API_KEY` in `.env.local`.
 
 Choose one environment manager below to prepare Node.js, pnpm, and Just.
 The pinned versions are recorded in [.tool-versions](.tool-versions) and the locked Nix environment.
-The scaffold needs no API account or credentials.
+
+Register a free account at [CurrencyBeacon](https://currencybeacon.com/register).
+Copy the key from **API Token Information** in the logged-in dashboard.
+Create an ignored `.env.local` in the project root:
+
+```dotenv
+VITE_CURRENCYBEACON_API_KEY=your_key_here
+```
+
+Restart the development server after changing this file.
+The key is visible to browser users. Storybook and automated tests use mocked responses and do not require it.
 
 ## Start
 

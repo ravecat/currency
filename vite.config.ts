@@ -14,6 +14,15 @@ const browserSize = {
 
 export default defineConfig({
   plugins: [preact(), tailwindcss()],
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://api.currencybeacon.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "/v1"),
+      },
+    },
+  },
   test: {
     projects: [
       {
