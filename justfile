@@ -5,7 +5,11 @@ setup:
     pnpm install --frozen-lockfile
 
 up: setup
-    pnpm run dev
+    pnpm exec concurrently --kill-others "pnpm run typecheck:watch" "pnpm run dev:server" "pnpm run storybook:server"
+
+[positional-arguments]
+storybook *args:
+    pnpm run storybook "$@"
 
 build:
     pnpm run build

@@ -15,18 +15,18 @@ The scaffold needs no API account or credentials.
 
 Run commands from the project directory after preparing your selected manager:
 
-| Environment                     | Start the application    |
-| ------------------------------- | ------------------------ |
-| Nix Flake                       | `nix develop -c just up` |
-| mise                            | `mise run up`            |
-| asdf                            | `asdf exec just up`      |
-| Tools already available on PATH | `just up`                |
+| Environment                     | Start the application and Storybook |
+| ------------------------------- | ----------------------------------- |
+| Nix Flake                       | `nix develop -c just up`            |
+| mise                            | `mise run up`                       |
+| asdf                            | `asdf exec just up`                 |
+| Tools already available on PATH | `just up`                           |
 
-Each command installs dependencies from `pnpm-lock.yaml`, then starts the application development server.
-The TypeScript watch task checks application code, tests, and tool configuration during development.
-Open [the application](http://localhost:5173).
-The terminal reports the actual port if the default is occupied.
-Press Ctrl+C to stop the server and type watchers.
+Each command installs dependencies from `pnpm-lock.yaml`, then starts both development servers.
+One shared TypeScript task watches the application and Node projects while both servers run.
+Open [the application](http://localhost:5173) and [Storybook](http://127.0.0.1:6006).
+The terminal reports the actual ports if these defaults are occupied.
+Press Ctrl+C to stop both servers and the type watchers.
 
 ## Prepare an Environment
 
@@ -45,7 +45,7 @@ Use the official installation instructions for your operating system:
 
 ### Nix Flake
 
-The Flake supplies the development tools.
+The Flake supplies the development tools and the matching browser runtime.
 Use `nix develop` for an interactive environment, then run the shared Just commands.
 
 Optional [direnv](https://direnv.net/docs/installation.html) activation:
@@ -91,30 +91,49 @@ No environment manager is required for this path.
 
 Run these commands inside the chosen environment. Prefix them with `nix develop -c`, `mise exec --`, or `asdf exec` when needed.
 
-| Command       | Purpose                                         |
-| ------------- | ----------------------------------------------- |
-| `just`        | List available workflows.                       |
-| `just setup`  | Install dependencies with frozen pnpm locking.  |
-| `just up`     | Install dependencies and start the application. |
-| `just check`  | Check formatting, lint rules, and TypeScript.   |
-| `just build`  | Build the application into `dist/`.             |
-| `just test`   | Check types, then run TypeScript unit tests.    |
-| `just format` | Apply lint fixes and formatting.                |
+| Command                    | Purpose                                                              |
+| -------------------------- | -------------------------------------------------------------------- |
+| `just`                     | List available workflows.                                            |
+| `just setup`               | Install dependencies with frozen pnpm locking.                       |
+| `just up`                  | Install dependencies and start the application and Storybook.        |
+| `just storybook`           | Start Storybook independently.                                       |
+| `just check`               | Check formatting, lint rules, and TypeScript.                        |
+| `just test`                | Check types, then run unit, Chromium story, and accessibility tests. |
+| `just build`               | Build the application into `dist/`.                                  |
+| `just format`              | Apply lint fixes and formatting.                                     |
+| `pnpm run build-storybook` | Build Storybook into `storybook-static/`.                            |
 
 Use pnpm for package operations. `package.json` pins its version, and `pnpm-lock.yaml` owns the dependency lock.
 `pnpm-workspace.yaml` records the build-script permission needed by esbuild.
 
-`pnpm run dev` starts the server and TypeScript watch task. It forwards server arguments, such as `--port 5174`.
-Tests and builds stop on type errors. The initial scaffold contains no test cases yet.
+`pnpm run dev` and `just storybook` also start the TypeScript watch task when used independently.
+They forward server arguments, such as `pnpm run dev --port 5174` or `just storybook --port 6007`.
+The `dev:server` and `storybook:server` scripts are server-only tasks used by combined startup to avoid duplicate watchers.
+Tests and both builds stop on type errors. Use `pnpm run test --project unit` for unit tests.
+The existing application, stories, and tool configuration already use TypeScript.
+
+## Browser Tests Outside Nix
+
+After `just setup`, install the browser selected by the locked Playwright package:
+
+```sh
+pnpm exec playwright install chromium
+just test
+```
+
+Run these commands inside mise or asdf, or prefix each command with the selected manager's execution command.
+On supported Linux systems, browser tests also need [Playwright's system libraries](https://playwright.dev/docs/browsers#install-system-dependencies).
+Install those explicitly with `pnpm exec playwright install-deps chromium` when needed; this can require administrator access.
+Application and Storybook startup do not require the test browser installation.
 
 ## Stack
 
-| Area                               | Source                           |
-| ---------------------------------- | -------------------------------- |
-| Application, styling, and checks   | [package.json](package.json)     |
-| Nix environment                    | [flake.nix](flake.nix)           |
-| Shared mise and asdf tool versions | [.tool-versions](.tool-versions) |
-| mise startup task                  | [mise.toml](mise.toml)           |
+| Area                                        | Source                           |
+| ------------------------------------------- | -------------------------------- |
+| Application, styling, Storybook, and checks | [package.json](package.json)     |
+| Nix environment                             | [flake.nix](flake.nix)           |
+| Shared mise and asdf tool versions          | [.tool-versions](.tool-versions) |
+| mise startup task                           | [mise.toml](mise.toml)           |
 
 ## License
 
