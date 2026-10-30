@@ -1,0 +1,39 @@
+{
+  "name": "currency",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently --kill-others --passthrough-arguments \"pnpm run typecheck:watch\" \"pnpm run dev:server {@}\" --",
+    "dev:server": "vite",
+    "build": "pnpm run typecheck && vite build",
+    "preview": "vite preview",
+    "format": "oxlint --fix && oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint --deny-warnings",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck",
+    "typecheck": "tsc -b",
+    "typecheck:watch": "concurrently --kill-others \"tsc -p tsconfig.app.json --watch --preserveWatchOutput\" \"tsc -p tsconfig.node.json --watch --preserveWatchOutput\"",
+    "test": "pnpm run typecheck && vitest run"
+  },
+  "dependencies": {
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.19.2",
+    "concurrently": "^10.0.6",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": "11.27.0"
+  },
+  "packageManager": "pnpm@11.27.0"
+}
