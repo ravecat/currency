@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others --passthrough-arguments \"pnpm run typecheck:watch\" \"pnpm run dev:server {@}\" --",
-    "dev:server": "vite",
+    "dev:server": "concurrently --kill-others --passthrough-arguments \"pnpm run dev:api\" \"vite {@}\" --",
+    "dev:api": "node --watch --env-file-if-exists=.env.local server/index.ts",
     "build": "pnpm run typecheck && vite build && storybook build --disable-telemetry",
-    "preview": "vite preview",
+    "start": "node --env-file-if-exists=.env.local server/index.ts",
+    "preview": "pnpm run start",
     "storybook": "concurrently --kill-others --passthrough-arguments \"pnpm run typecheck:watch\" \"pnpm run storybook:server {@}\" --",
     "storybook:server": "storybook dev --port 6006 --ci --disable-telemetry",
     "format": "oxlint --fix && oxfmt",
@@ -19,7 +21,9 @@
     "test": "pnpm run typecheck && vitest run"
   },
   "dependencies": {
+    "@hono/node-server": "^2.1.5",
     "@preact/signals": "^2.11.4",
+    "hono": "^4.13.14",
     "preact": "^10.29.8",
     "zod": "^4.6.7"
   },

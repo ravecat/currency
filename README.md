@@ -5,7 +5,7 @@ A currency converter.
 ## Requirements
 
 - Node.js 24 (`>=24 <25`).
-- A [CurrencyBeacon API key](https://currencybeacon.com/api-documentation), set as `VITE_CURRENCYBEACON_API_KEY` in `.env.local`.
+- A [CurrencyBeacon API key](https://currencybeacon.com/api-documentation), set as `CURRENCYBEACON_API_KEY` in `.env.local`.
 
 Choose one environment manager below to prepare Node.js, pnpm, and Just.
 The pinned versions are recorded in [.tool-versions](.tool-versions) and the locked Nix environment.
@@ -15,11 +15,11 @@ Copy the key from **API Token Information** in the logged-in dashboard.
 Create an ignored `.env.local` in the project root:
 
 ```dotenv
-VITE_CURRENCYBEACON_API_KEY=your_key_here
+CURRENCYBEACON_API_KEY=your_key_here
 ```
 
-Restart the development server after changing this file.
-The key is visible to browser users. Storybook and automated tests use mocked responses and do not require it.
+Restart the server after changing this file. Replace the old `VITE_CURRENCYBEACON_API_KEY` name if upgrading an existing environment file.
+Only the Hono server reads the key. Storybook and automated tests use mocked responses and do not require it.
 
 ## Start
 
@@ -32,11 +32,20 @@ Run commands from the project directory after preparing your selected manager:
 | asdf                            | `asdf exec just up`                 |
 | Tools already available on PATH | `just up`                           |
 
-Each command installs dependencies from `pnpm-lock.yaml`, then starts both development servers.
-One shared TypeScript task watches the application and Node projects while both servers run.
+Each command installs dependencies from `pnpm-lock.yaml`, then starts Vite, Hono, and Storybook.
+One shared TypeScript task watches the application and Node projects while the servers run.
 Open [the application](http://localhost:5173) and [Storybook](http://127.0.0.1:6006).
 The terminal reports the actual ports if these defaults are occupied.
-Press Ctrl+C to stop both servers and the type watchers.
+Press Ctrl+C to stop the servers and the type watchers.
+
+### Production
+
+Run `pnpm run build`, then `pnpm start` from the project root.
+Hono serves the application from `dist/` and handles `/api/*` on the same origin, at `http://localhost:3000` by default.
+Set `PORT` to change the server port. Supply `CURRENCYBEACON_API_KEY` through the process environment or `.env.local`.
+Deployment needs Node.js 24, the production dependencies, `server/`, `src/contracts.ts`, and `dist/`.
+The server runs TypeScript directly with Node.js; Vite is not required at runtime.
+GitHub Pages alone cannot run this server.
 
 ## Prepare an Environment
 
@@ -108,8 +117,9 @@ Run these commands inside the chosen environment. Prefix them with `nix develop 
 | `just up`        | Install dependencies and start the application and Storybook.              |
 | `just storybook` | Start Storybook independently.                                             |
 | `just check`     | Check formatting, lint rules, and TypeScript.                              |
-| `just test`      | Check types, then run story scenarios, accessibility, and screenshots.     |
+| `just test`      | Check types, story scenarios, accessibility, and screenshots.              |
 | `just build`     | Build the application into `dist/` and Storybook into `storybook-static/`. |
+| `pnpm start`     | Serve the built application and API with Hono.                             |
 | `just format`    | Apply lint fixes and formatting.                                           |
 
 Use pnpm for package operations. `package.json` pins its version, and `pnpm-lock.yaml` owns the dependency lock.
@@ -117,7 +127,8 @@ Use pnpm for package operations. `package.json` pins its version, and `pnpm-lock
 
 `pnpm run dev` and `just storybook` also start the TypeScript watch task when used independently.
 They forward server arguments, such as `pnpm run dev --port 5174` or `just storybook --port 6007`.
-The `dev:server` and `storybook:server` scripts are server-only tasks used by combined startup to avoid duplicate watchers.
+The `dev:server` task starts Vite and the watched Hono server on port 3000, or `PORT` when set; Vite forwards `/api` to Hono.
+The `dev:server` and `storybook:server` scripts omit compiler watchers so combined startup runs only one shared type check.
 Tests and both builds stop on type errors. Story tests use mocked API responses and compare screenshots at five viewport sizes.
 The existing application, stories, and tool configuration already use TypeScript.
 

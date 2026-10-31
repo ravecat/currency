@@ -2,10 +2,13 @@ import preact from "@preact/preset-vite";
 import tailwindcss from "@tailwindcss/vite";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 import { presets } from "./.storybook/matrix.ts";
+
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const browserSize = {
   width: Math.max(...Object.values(presets).map(({ width }) => width)),
@@ -17,9 +20,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://api.currencybeacon.com",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "/v1"),
+        target: `http://127.0.0.1:${process.env.PORT ?? 3000}`,
       },
     },
   },
@@ -33,7 +34,6 @@ export default defineConfig({
         ],
         test: {
           name: "storybook",
-          env: { VITE_CURRENCYBEACON_API_KEY: "storybook-key" },
           setupFiles: ["./.storybook/vitest.setup.ts"],
           browser: {
             enabled: true,

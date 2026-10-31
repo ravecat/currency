@@ -44,11 +44,11 @@ function mockApi({
     if (url.origin !== window.location.origin || !url.pathname.startsWith("/api/")) {
       return originalFetch(input, init);
     }
-    if (new Headers(init?.headers).get("Authorization") !== "Bearer storybook-key") {
-      return new Response(null, { status: 401 });
+    if (new Headers(init?.headers).has("Authorization")) {
+      throw new Error("Browser requests must not contain API credentials");
     }
     if (url.pathname === "/api/currencies") {
-      if (listFailures-- > 0) return new Response(null, { status: 503 });
+      if (listFailures-- > 0) return new Response(null, { status: 502 });
       return Response.json({ response: empty ? [] : currencyList });
     }
     if (conversionFailures-- > 0) return new Response(null, { status: 503 });
