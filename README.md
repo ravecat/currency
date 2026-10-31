@@ -40,14 +40,25 @@ Press Ctrl+C to stop the servers and the type watchers.
 
 ### Production
 
-Run `pnpm run build`, then `pnpm start` from the project root.
-Hono serves the application from `dist/` and handles `/api/*` on the same origin, at `http://localhost:3000` by default.
-Set `PORT` to change the server port. Supply `CURRENCYBEACON_API_KEY` through the process environment or `.env.local`.
-Deployment needs Node.js 24, the production dependencies, `server/`, `src/contracts.ts`, and `dist/`.
-The server runs TypeScript directly with Node.js; Vite is not required at runtime.
-GitHub Pages alone cannot run this server.
+Use Docker and the `.env.local` file configured above. Node.js is not required on the host.
+Build the image locally from the [Dockerfile](Dockerfile) and run it:
 
-## Prepare an Environment
+```sh
+docker build --tag currency:local .
+docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges \
+  --publish 127.0.0.1:3000:3000 --env-file .env.local currency:local
+```
+
+Or run the published image:
+
+```sh
+docker run --rm --pull=always --read-only --cap-drop=ALL --security-opt=no-new-privileges \
+  --publish 127.0.0.1:3000:3000 --env-file .env.local ghcr.io/ravecat/currency:latest
+```
+
+Open [http://localhost:3000](http://localhost:3000). The API key is supplied at runtime and is not included in the image.
+
+## Development
 
 Only your chosen manager is required.
 
