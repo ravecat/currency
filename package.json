@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "concurrently --kill-others --passthrough-arguments \"pnpm run typecheck:watch\" \"pnpm run dev:server {@}\" --",
     "dev:server": "vite",
-    "build": "pnpm run typecheck && vite build",
+    "build": "pnpm run typecheck && vite build && storybook build --disable-telemetry",
     "preview": "vite preview",
     "storybook": "concurrently --kill-others --passthrough-arguments \"pnpm run typecheck:watch\" \"pnpm run storybook:server {@}\" --",
     "storybook:server": "storybook dev --port 6006 --ci --disable-telemetry",
-    "build-storybook": "pnpm run typecheck && storybook build --disable-telemetry",
     "format": "oxlint --fix && oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint --deny-warnings",

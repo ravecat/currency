@@ -1,7 +1,6 @@
 # Currency
 
-Currency is a Preact application scaffold for a currency conversion assessment.
-The current page displays only `Hello`. Currency conversion remains planned.
+A currency converter.
 
 ## Requirements
 
@@ -102,17 +101,16 @@ No environment manager is required for this path.
 
 Run these commands inside the chosen environment. Prefix them with `nix develop -c`, `mise exec --`, or `asdf exec` when needed.
 
-| Command                    | Purpose                                                              |
-| -------------------------- | -------------------------------------------------------------------- |
-| `just`                     | List available workflows.                                            |
-| `just setup`               | Install dependencies with frozen pnpm locking.                       |
-| `just up`                  | Install dependencies and start the application and Storybook.        |
-| `just storybook`           | Start Storybook independently.                                       |
-| `just check`               | Check formatting, lint rules, and TypeScript.                        |
-| `just test`                | Check types, then run unit, Chromium story, and accessibility tests. |
-| `just build`               | Build the application into `dist/`.                                  |
-| `just format`              | Apply lint fixes and formatting.                                     |
-| `pnpm run build-storybook` | Build Storybook into `storybook-static/`.                            |
+| Command          | Purpose                                                                    |
+| ---------------- | -------------------------------------------------------------------------- |
+| `just`           | List available workflows.                                                  |
+| `just setup`     | Install dependencies with frozen pnpm locking.                             |
+| `just up`        | Install dependencies and start the application and Storybook.              |
+| `just storybook` | Start Storybook independently.                                             |
+| `just check`     | Check formatting, lint rules, and TypeScript.                              |
+| `just test`      | Check types, then run story scenarios, accessibility, and screenshots.     |
+| `just build`     | Build the application into `dist/` and Storybook into `storybook-static/`. |
+| `just format`    | Apply lint fixes and formatting.                                           |
 
 Use pnpm for package operations. `package.json` pins its version, and `pnpm-lock.yaml` owns the dependency lock.
 `pnpm-workspace.yaml` records the build-script permission needed by esbuild.
@@ -120,7 +118,7 @@ Use pnpm for package operations. `package.json` pins its version, and `pnpm-lock
 `pnpm run dev` and `just storybook` also start the TypeScript watch task when used independently.
 They forward server arguments, such as `pnpm run dev --port 5174` or `just storybook --port 6007`.
 The `dev:server` and `storybook:server` scripts are server-only tasks used by combined startup to avoid duplicate watchers.
-Tests and both builds stop on type errors. Use `pnpm run test --project unit` for unit tests.
+Tests and both builds stop on type errors. Story tests use mocked API responses and compare screenshots at five viewport sizes.
 The existing application, stories, and tool configuration already use TypeScript.
 
 ## Browser Tests Outside Nix

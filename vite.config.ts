@@ -27,20 +27,13 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        test: {
-          name: "unit",
-          environment: "node",
-          include: ["src/**/*.test.ts"],
-        },
-      },
-      {
-        extends: true,
         optimizeDeps: { include: ["@storybook/addon-a11y/preview", "@storybook/preact-vite"] },
         plugins: [
           storybookTest({ configDir: fileURLToPath(new URL("./.storybook", import.meta.url)) }),
         ],
         test: {
           name: "storybook",
+          env: { VITE_CURRENCYBEACON_API_KEY: "storybook-key" },
           setupFiles: ["./.storybook/vitest.setup.ts"],
           browser: {
             enabled: true,
